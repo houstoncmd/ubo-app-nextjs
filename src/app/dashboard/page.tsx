@@ -1,196 +1,238 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
-import PageHeader from "@/components/PageHeader";
-import StatCard from "@/components/StatCard";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 
-// Mock data for dashboard
-const stats = [
+const statCards = [
   {
-    title: "Total Searches",
-    value: "12,847",
+    label: "Total Searches",
+    value: "0",
     icon: "bi-search",
-    color: "blue" as const,
-    change: "+12.5% this month",
-    changeType: "up" as const,
+    color: "var(--lhb-primary)",
+    bgColor: "rgba(37,99,235,0.1)",
   },
   {
-    title: "Companies Analyzed",
-    value: "8,234",
+    label: "Companies Analyzed",
+    value: "0",
     icon: "bi-building",
-    color: "green" as const,
-    change: "+8.3% this month",
-    changeType: "up" as const,
+    color: "var(--lhb-success)",
+    bgColor: "rgba(16,185,129,0.1)",
   },
   {
-    title: "UBOs Identified",
-    value: "24,591",
+    label: "UBOs Identified",
+    value: "0",
     icon: "bi-person-check",
-    color: "amber" as const,
-    change: "+15.2% this month",
-    changeType: "up" as const,
+    color: "var(--lhb-warning)",
+    bgColor: "rgba(245,158,11,0.1)",
   },
   {
-    title: "Active Sessions",
-    value: "47",
-    icon: "bi-activity",
-    color: "cyan" as const,
-    change: "-2.1% vs yesterday",
-    changeType: "down" as const,
+    label: "Active Sessions",
+    value: "1",
+    icon: "bi-people",
+    color: "var(--lhb-info)",
+    bgColor: "rgba(6,182,212,0.1)",
   },
-];
-
-const recentActivity = [
-  { id: 1, user: "Somchai P.", action: "Searched", target: "0105546000123", time: "2 min ago", status: "success" },
-  { id: 2, user: "Nattaya K.", action: "Searched", target: "0105546000456", time: "5 min ago", status: "success" },
-  { id: 3, user: "Prasert M.", action: "Searched", target: "0105546000789", time: "12 min ago", status: "error" },
-  { id: 4, user: "Wichai T.", action: "Exported", target: "0105546000321", time: "18 min ago", status: "success" },
-  { id: 5, user: "Kannika S.", action: "Searched", target: "0105546000654", time: "25 min ago", status: "success" },
 ];
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-lhb-bg">
-      <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <PageHeader
-          title="Dashboard"
-          subtitle="Overview of your UBO search and analysis activities"
-          breadcrumbs={[{ label: "Dashboard" }]}
-          actions={
-            <Link href="/search" className="lhb-btn-primary flex items-center gap-2">
-              <i className="bi bi-plus-lg"></i>
-              New Search
-            </Link>
-          }
-        />
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat) => (
-            <StatCard key={stat.title} {...stat} />
-          ))}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      {/* Page Header */}
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h4
+            className="mb-1 font-bold"
+            style={{ color: "var(--lhb-navy)" }}
+          >
+            Dashboard
+          </h4>
+          <p className="text-slate-500 text-sm mb-0">
+            Welcome back, <strong>Admin</strong>.
+          </p>
+          <p className="text-slate-500 text-sm mb-0">
+            <i className="bi bi-envelope me-1"></i>admin@lhb.local
+            <span className="mx-1">|</span>
+            <i className="bi bi-briefcase me-1"></i>System Administrator
+          </p>
         </div>
+        <a
+          href="/search"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors"
+        >
+          <i className="bi bi-search me-1"></i> New Analysis
+        </a>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Charts Placeholder */}
-          <div className="lg:col-span-2 lhb-card">
-            <div className="lhb-card-header flex items-center justify-between">
-              <h3 className="font-semibold text-slate-800">Search Trends</h3>
-              <select className="text-sm border border-slate-200 rounded-lg px-3 py-1.5">
-                <option>Last 7 days</option>
-                <option>Last 30 days</option>
-                <option>Last 90 days</option>
-              </select>
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+        {statCards.map((card) => (
+          <div
+            key={card.label}
+            className="bg-white rounded-lg shadow-sm border border-slate-200 p-5 flex items-center gap-4 hover:shadow-md transition-shadow"
+          >
+            <div
+              className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+              style={{ background: card.bgColor }}
+            >
+              <i
+                className={`bi ${card.icon} text-xl`}
+                style={{ color: card.color }}
+              ></i>
             </div>
-            <div className="lhb-card-body">
-              <div className="h-64 flex items-center justify-center bg-slate-50 rounded-lg border-2 border-dashed border-slate-200">
-                <div className="text-center">
-                  <i className="bi bi-bar-chart text-4xl text-slate-300 mb-2"></i>
-                  <p className="text-slate-500 text-sm">Chart.js integration ready</p>
-                  <p className="text-slate-400 text-xs mt-1">
-                    Configure backend to display search trend data
-                  </p>
-                </div>
+            <div>
+              <div className="text-xs text-slate-500 font-medium">
+                {card.label}
+              </div>
+              <div
+                className="text-2xl font-bold"
+                style={{ color: "var(--lhb-text)" }}
+              >
+                {card.value}
               </div>
             </div>
           </div>
+        ))}
+      </div>
 
-          {/* Quick Actions */}
-          <div className="lhb-card">
-            <div className="lhb-card-header">
-              <h3 className="font-semibold text-slate-800">Quick Actions</h3>
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-4">
+        {/* Most Searched Companies */}
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+          <div className="px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+            <h5 className="text-sm font-semibold text-slate-700">
+              <i className="bi bi-bar-chart me-2"></i>Most Searched Companies
+            </h5>
+          </div>
+          <div className="p-5">
+            <div className="flex items-center justify-center py-12 text-slate-400">
+              <div className="text-center">
+                <i className="bi bi-bar-chart text-4xl mb-2"></i>
+                <p className="text-sm">No search data yet. Start your first analysis!</p>
+              </div>
             </div>
-            <div className="lhb-card-body space-y-3">
-              <Link
-                href="/search"
-                className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors"
-              >
-                <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <i className="bi bi-search text-blue-600"></i>
-                </div>
-                <div>
-                  <p className="font-medium text-slate-800">Search Company</p>
-                  <p className="text-xs text-slate-500">Find UBO information</p>
-                </div>
-              </Link>
+          </div>
+        </div>
 
-              <Link
-                href="/history"
-                className="flex items-center gap-3 p-3 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition-colors"
-              >
-                <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
-                  <i className="bi bi-clock-history text-emerald-600"></i>
-                </div>
-                <div>
-                  <p className="font-medium text-slate-800">View History</p>
-                  <p className="text-xs text-slate-500">Browse past searches</p>
-                </div>
-              </Link>
-
-              <Link
-                href="/settings"
-                className="flex items-center gap-3 p-3 rounded-lg bg-amber-50 hover:bg-amber-100 transition-colors"
-              >
-                <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                  <i className="bi bi-gear text-amber-600"></i>
-                </div>
-                <div>
-                  <p className="font-medium text-slate-800">Settings</p>
-                  <p className="text-xs text-slate-500">Configure application</p>
-                </div>
-              </Link>
+        {/* Searches by Day */}
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+          <div className="px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+            <h5 className="text-sm font-semibold text-slate-700">
+              <i className="bi bi-calendar-week me-2"></i>Searches by Day (7
+              days)
+            </h5>
+          </div>
+          <div className="p-5">
+            <div className="flex items-center justify-center py-12 text-slate-400">
+              <div className="text-center">
+                <i className="bi bi-calendar-week text-4xl mb-2"></i>
+                <p className="text-sm">No activity data yet.</p>
+              </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions + Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-4">
+        {/* Quick Actions */}
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+          <div className="px-5 py-3 border-b border-slate-200">
+            <h5 className="text-sm font-semibold text-slate-700">
+              <i className="bi bi-lightning me-2"></i>Quick Actions
+            </h5>
+          </div>
+          <div className="p-4 flex flex-col gap-2">
+            <a
+              href="/search"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors no-underline"
+            >
+              <div
+                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ background: "rgba(37,99,235,0.1)" }}
+              >
+                <i
+                  className="bi bi-search"
+                  style={{ color: "var(--lhb-primary)" }}
+                ></i>
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-slate-800">
+                  New UBO Analysis
+                </div>
+                <div className="text-xs text-slate-500">
+                  Search by company registration ID
+                </div>
+              </div>
+            </a>
+            <a
+              href="/history"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors no-underline"
+            >
+              <div
+                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ background: "rgba(16,185,129,0.1)" }}
+              >
+                <i
+                  className="bi bi-clock-history"
+                  style={{ color: "var(--lhb-success)" }}
+                ></i>
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-slate-800">
+                  View Search History
+                </div>
+                <div className="text-xs text-slate-500">
+                  Review past analyses and results
+                </div>
+              </div>
+            </a>
+            <a
+              href="/settings"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors no-underline"
+            >
+              <div
+                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ background: "rgba(100,116,139,0.1)" }}
+              >
+                <i
+                  className="bi bi-gear"
+                  style={{ color: "var(--lhb-text-secondary)" }}
+                ></i>
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-slate-800">
+                  System Settings
+                </div>
+                <div className="text-xs text-slate-500">
+                  Manage users, API, and logs
+                </div>
+              </div>
+            </a>
           </div>
         </div>
 
         {/* Recent Activity */}
-        <div className="lhb-card mt-6">
-          <div className="lhb-card-header flex items-center justify-between">
-            <h3 className="font-semibold text-slate-800">Recent Activity</h3>
-            <Link href="/history" className="text-sm text-blue-600 hover:text-blue-800">
-              View all <i className="bi bi-arrow-right ml-1"></i>
-            </Link>
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 hover:shadow-md transition-shadow lg:col-span-2">
+          <div className="px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+            <h5 className="text-sm font-semibold text-slate-700">
+              <i className="bi bi-clock-history me-2"></i>Recent Activity
+            </h5>
+            <a
+              href="/history"
+              className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+            >
+              View All
+            </a>
           </div>
-          <div className="overflow-x-auto">
-            <table className="lhb-table">
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Action</th>
-                  <th>Target</th>
-                  <th>Status</th>
-                  <th>Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentActivity.map((item) => (
-                  <tr key={item.id}>
-                    <td className="font-medium text-slate-800">{item.user}</td>
-                    <td>{item.action}</td>
-                    <td>
-                      <code className="text-xs bg-slate-100 px-2 py-1 rounded">
-                        {item.target}
-                      </code>
-                    </td>
-                    <td>
-                      <span
-                        className={`lhb-badge-${
-                          item.status === "success" ? "success" : "danger"
-                        }`}
-                      >
-                        {item.status === "success" ? "Success" : "Error"}
-                      </span>
-                    </td>
-                    <td className="text-slate-500">{item.time}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="p-5">
+            <div className="flex items-center justify-center py-8 text-slate-400">
+              <div className="text-center">
+                <i className="bi bi-clock-history text-4xl mb-2"></i>
+                <p className="text-sm">No activity yet. Start your first analysis!</p>
+              </div>
+            </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

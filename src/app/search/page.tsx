@@ -1,150 +1,202 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
-import PageHeader from "@/components/PageHeader";
 
 export default function SearchPage() {
-  const router = useRouter();
   const [registrationId, setRegistrationId] = useState("");
-  const [language, setLanguage] = useState("en");
-  const [isSearching, setIsSearching] = useState(false);
+  const [language, setLanguage] = useState("TH");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSearch = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!registrationId.trim()) return;
-
-    setIsSearching(true);
-    // TODO: Connect to API backend
-    setTimeout(() => {
-      setIsSearching(false);
-      router.push(`/result/${registrationId}`);
-    }, 2000);
+    setIsLoading(true);
+    // TODO: Call proxy to FastAPI backend
+    console.log("Search:", { registrationId, language });
+    setTimeout(() => setIsLoading(false), 2000);
   };
 
-  const howItWorks = [
-    {
-      step: 1,
-      icon: "bi-keyboard",
-      title: "Enter Registration ID",
-      description: "Input the company registration number (13 digits)",
-    },
-    {
-      step: 2,
-      icon: "bi-search",
-      title: "System Searches",
-      description: "Our system queries DBD and cross-references ownership data",
-    },
-    {
-      step: 3,
-      icon: "bi-diagram-3",
-      title: "Analysis Complete",
-      description: "View ownership structure, shareholders, and UBO identification",
-    },
-  ];
-
   return (
-    <div className="min-h-screen bg-lhb-bg">
-      <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <PageHeader
-          title="Search"
-          subtitle="Find company and beneficial ownership information"
-          breadcrumbs={[{ label: "Search" }]}
-        />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      {/* Page Header */}
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h4
+            className="mb-1 font-bold"
+            style={{ color: "var(--lhb-navy)" }}
+          >
+            <i className="bi bi-search me-2"></i>UBO Analysis
+          </h4>
+          <p className="text-slate-500 text-sm mb-0">
+            Identify Ultimate Beneficial Owners by company registration ID.
+          </p>
+        </div>
+      </div>
 
-        {/* Hero Search Section */}
-        <div className="lhb-card mb-8">
-          <div className="lhb-card-body">
-            <form onSubmit={handleSearch} className="space-y-6">
-              <div className="max-w-2xl mx-auto">
-                <label className="lhb-label text-center text-lg">
-                  Company Registration ID
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                    <i className="bi bi-building"></i>
-                  </span>
-                  <input
-                    type="text"
-                    className="lhb-input pl-12 pr-32 py-4 text-lg"
-                    placeholder="e.g., 0105546000123"
-                    value={registrationId}
-                    onChange={(e) => setRegistrationId(e.target.value)}
-                    maxLength={13}
-                    required
-                  />
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                    <select
-                      className="text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white"
-                      value={language}
-                      onChange={(e) => setLanguage(e.target.value)}
-                    >
-                      <option value="en">English</option>
-                      <option value="th">Thai</option>
-                    </select>
-                    <button
-                      type="submit"
-                      disabled={isSearching || !registrationId.trim()}
-                      className="lhb-btn-primary px-6 py-2 flex items-center gap-2"
-                    >
-                      {isSearching ? (
-                        <>
-                          <i className="bi bi-arrow-repeat animate-spin"></i>
-                          Searching...
-                        </>
-                      ) : (
-                        <>
-                          <i className="bi bi-search"></i>
-                          Search
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-                <p className="text-xs text-slate-500 mt-2 text-center">
-                  Enter a 13-digit Thai company registration number
-                </p>
-              </div>
-
-              {isSearching && (
-                <div className="text-center">
-                  <div className="inline-flex items-center gap-3 px-6 py-3 bg-blue-50 rounded-lg">
-                    <i className="bi bi-arrow-repeat animate-spin text-blue-600"></i>
-                    <span className="text-blue-700 font-medium">
-                      Searching for company data...
-                    </span>
-                  </div>
-                </div>
-              )}
-            </form>
-          </div>
+      {/* Hero Search */}
+      <div
+        className="rounded-xl p-6 mb-4"
+        style={{
+          background:
+            "linear-gradient(135deg, var(--lhb-navy) 0%, #1e3a5f 50%, #0f172a 100%)",
+        }}
+      >
+        <div className="text-white font-semibold text-lg mb-1">
+          Company Search
+        </div>
+        <div className="text-white/50 text-sm mb-4">
+          Enter the 13-digit Thai company registration ID to analyze the
+          ownership structure.
         </div>
 
-        {/* How It Works */}
-        <div className="lhb-card">
-          <div className="lhb-card-header">
-            <h3 className="font-semibold text-slate-800">How It Works</h3>
-          </div>
-          <div className="lhb-card-body">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {howItWorks.map((item) => (
-                <div key={item.step} className="text-center">
-                  <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
-                    <i className={`bi ${item.icon} text-2xl text-blue-600`}></i>
-                  </div>
-                  <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-sm font-bold text-slate-600 mb-3">
-                    {item.step}
-                  </div>
-                  <h4 className="font-semibold text-slate-800 mb-2">{item.title}</h4>
-                  <p className="text-sm text-slate-500">{item.description}</p>
-                </div>
-              ))}
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-wrap gap-3 items-end">
+            <div className="flex-1 min-w-[180px]">
+              <label className="text-white/60 text-xs mb-1 block">
+                Registration ID
+              </label>
+              <input
+                type="text"
+                className="w-full px-3 py-2.5 border border-white/20 rounded-lg bg-white/10 text-white placeholder-white/40 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-sm"
+                placeholder="13-digit number"
+                value={registrationId}
+                onChange={(e) =>
+                  setRegistrationId(e.target.value.replace(/[^0-9]/g, ""))
+                }
+                maxLength={13}
+                pattern="[0-9]{13}"
+                required
+              />
+              <div className="text-white/30 text-[0.65rem] mt-1">
+                13-digit number only
+              </div>
+            </div>
+            <div className="w-[130px]">
+              <label className="text-white/60 text-xs mb-1 block">
+                Response Language
+              </label>
+              <select
+                className="w-full px-3 py-2.5 border border-white/20 rounded-lg bg-white/10 text-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-sm"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+              >
+                <option value="TH" className="text-slate-800">
+                  Thai (TH)
+                </option>
+                <option value="EN" className="text-slate-800">
+                  English (EN)
+                </option>
+              </select>
+              <div className="text-white/30 text-[0.65rem] mt-1">
+                Select language
+              </div>
+            </div>
+            <div>
+              <label className="text-transparent text-xs mb-1 block select-none">
+                &nbsp;
+              </label>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition-colors flex items-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <i className="bi bi-arrow-repeat animate-spin"></i>
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-search me-1"></i>Search UBO
+                  </>
+                )}
+              </button>
+              <div className="text-white/30 text-[0.65rem] mt-1">
+                Start analysis
+              </div>
             </div>
           </div>
+        </form>
+      </div>
+
+      {/* Loading indicator */}
+      {isLoading && (
+        <div className="text-center py-5">
+          <div
+            className="inline-block w-12 h-12 border-4 border-blue-500/30 border-t-blue-600 rounded-full animate-spin"
+          ></div>
+          <h5 className="mt-3 font-semibold" style={{ color: "var(--lhb-text)" }}>
+            Analyzing Ownership Structure
+          </h5>
+          <p className="text-slate-500 text-sm">
+            Traversing up to 6 levels of corporate hierarchy...
+            <br />
+            <span className="text-xs">This may take a few seconds for deep structures.</span>
+          </p>
         </div>
-      </main>
+      )}
+
+      {/* How It Works */}
+      <div className="bg-white rounded-lg shadow-sm border border-slate-200 mt-4">
+        <div className="px-5 py-3 border-b border-slate-200">
+          <h5 className="text-sm font-semibold text-slate-700">
+            <i className="bi bi-info-circle me-2"></i>How UBO Analysis Works
+          </h5>
+        </div>
+        <div className="p-5">
+          <div className="flex flex-col sm:flex-row gap-6">
+            {[
+              {
+                step: 1,
+                label: "Input Registration ID",
+                desc: "Enter the 13-digit company registration number",
+              },
+              {
+                step: 2,
+                label: "Analyze Ownership",
+                desc: "System traverses up to 6 levels of ownership hierarchy",
+              },
+              {
+                step: 3,
+                label: "Identify UBOs",
+                desc: "Persons with ≥15% effective ownership marked as UBOs",
+              },
+            ].map((item, i) => (
+              <div key={i} className="flex items-start gap-4 flex-1">
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+                  style={{
+                    background: "var(--lhb-primary)",
+                    color: "white",
+                  }}
+                >
+                  {item.step}
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-slate-800 mb-0.5">
+                    {item.label}
+                  </div>
+                  <div className="text-xs text-slate-500">{item.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Tips */}
+      <div className="bg-slate-50 rounded-lg p-4 mt-3 border-0">
+        <div className="flex items-start gap-3">
+          <i className="bi bi-lightbulb text-amber-500 text-xl flex-shrink-0"></i>
+          <div>
+            <strong className="text-sm">Pro Tip:</strong>
+            <span className="text-sm text-slate-500 ml-1">
+              You can search directly from the History page by clicking the
+              re-analyze button. Results are cached for faster subsequent
+              lookups.
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -167,3 +167,56 @@ body {
 .vis-network {
   outline: none !important;
 }
+
+/* Footer */
+.lhb-footer {
+  background: var(--lhb-surface);
+  border-top: 1px solid var(--lhb-border);
+  padding: 0.75rem 0;
+  font-size: 0.78rem;
+  color: var(--lhb-text-secondary);
+}
+
+/* Selection */
+::selection {
+  background: rgba(37, 99, 235, 0.15);
+  color: var(--lhb-primary-dark, #1d4ed8);
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Body layout */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Status dot */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.status-dot.online {
+  background: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Bootstrap Icons CDN fallback */
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css");
