@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --lhb-navy: #0f172a;
+  --lhb-navy-light: #1e293b;
+  --lhb-navy-mid: #334155;
+  --lhb-gold: #f59e0b;
+  --lhb-gold-light: #fbbf24;
+  --lhb-primary: #2563eb;
+  --lhb-success: #10b981;
+  --lhb-danger: #ef4444;
+  --lhb-warning: #f59e0b;
+  --lhb-info: #06b6d4;
+  --lhb-bg: #f1f5f9;
+  --lhb-surface: #ffffff;
+  --lhb-border: #e2e8f0;
+  --lhb-text: #1e293b;
+  --lhb-text-secondary: #64748b;
+  --lhb-font: 'Noto Sans Thai', system-ui, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: var(--lhb-font);
+  background-color: var(--lhb-bg);
+  color: var(--lhb-text);
+}
+
+/* LHB Design System Components */
+@layer components {
+  .lhb-card {
+    @apply bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden;
+  }
+
+  .lhb-card-header {
+    @apply px-6 py-4 border-b border-slate-200 bg-slate-50;
+  }
+
+  .lhb-card-body {
+    @apply p-6;
+  }
+
+  .lhb-btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200;
+  }
+
+  .lhb-btn-secondary {
+    @apply bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium px-4 py-2 rounded-lg transition-colors duration-200;
+  }
+
+  .lhb-btn-success {
+    @apply bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200;
+  }
+
+  .lhb-btn-danger {
+    @apply bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200;
+  }
+
+  .lhb-input {
+    @apply w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all;
+  }
+
+  .lhb-label {
+    @apply block text-sm font-medium text-slate-700 mb-1.5;
+  }
+
+  .lhb-badge-success {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800;
+  }
+
+  .lhb-badge-danger {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800;
+  }
+
+  .lhb-badge-warning {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800;
+  }
+
+  .lhb-badge-info {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-cyan-100 text-cyan-800;
+  }
+
+  .lhb-stat-card {
+    @apply bg-white rounded-lg shadow-sm border border-slate-200 p-6 flex items-center gap-4;
+  }
+
+  .lhb-stat-icon {
+    @apply w-12 h-12 rounded-lg flex items-center justify-center;
+  }
+
+  .lhb-breadcrumb {
+    @apply text-sm text-slate-500 flex items-center gap-2;
+  }
+
+  .lhb-breadcrumb a {
+    @apply text-blue-600 hover:text-blue-800 transition-colors;
+  }
+
+  .lhb-table {
+    @apply w-full text-sm text-left;
+  }
+
+  .lhb-table thead {
+    @apply text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200;
+  }
+
+  .lhb-table tbody tr {
+    @apply border-b border-slate-100 hover:bg-slate-50 transition-colors;
+  }
+
+  .lhb-table td,
+  .lhb-table th {
+    @apply px-6 py-3;
+  }
+
+  .lhb-tab {
+    @apply px-4 py-2 text-sm font-medium border-b-2 transition-colors;
+  }
+
+  .lhb-tab-active {
+    @apply border-blue-600 text-blue-600;
+  }
+
+  .lhb-tab-inactive {
+    @apply border-transparent text-slate-500 hover:text-slate-700;
+  }
+}
+
+/* Gold gradient for brand elements */
+.lhb-brand-gradient {
+  background: linear-gradient(135deg, var(--lhb-gold) 0%, var(--lhb-gold-light) 100%);
+}
+
+/* Navbar styling */
+.lhb-navbar {
+  background-color: var(--lhb-navy);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--lhb-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Vis.js network graph container */
+.vis-network {
+  outline: none !important;
+}
