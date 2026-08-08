@@ -63,6 +63,7 @@ export async function proxyToBackend(
   const init: RequestInit = {
     method,
     headers: buildForwardHeaders(request.headers, options?.extraHeaders),
+    redirect: "manual", // Don't follow redirects — capture Set-Cookie from 303
   };
 
   if (method !== "GET" && method !== "DELETE") {
