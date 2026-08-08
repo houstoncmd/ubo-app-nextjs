@@ -1,48 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
-import { proxyToBackend } from "@/lib/api-client";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://ubo-app:8000";
 
 /**
  * POST /api/auth/login
- * Proxies login credentials to FastAPI backend: POST /login
- * The backend sets a session_id cookie which is forwarded to the browser.
+ * Directly calls FastAPI /login endpoint and forwards the session cookie.
  */
 export async function POST(request: NextRequest) {
   const body = await request.text();
 
-  const response = await proxyToBackend("/login", request, {
-    method: "POST",
-    body,
-    extraHeaders: { "Content-Type": "application/x-www-form-urlencoded" },
-  });
-
-  // Forward Set-Cookie and status from backend
-  const headers: Record<string, string> = {};
-  const setCookie = response.headers.get("Set-Cookie");
-  if (setCookie) {
-    headers["Set-Cookie"] = setCookie;
-  }
-
-  if (response.status === 303) {
-    // Login successful — return 303 redirect to dashboard
-    console.log("[Auth] Login successful, redirecting to /dashboard");
-    return NextResponse.redirect(new URL("/dashboard", request.url), {
-      status: 303,
-      headers,
+  try {
+    // Call FastAPI directly
+    const response = await fetch(`${API_BASE}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body,
+      redirect: "manual", // Don't follow 303 redirect
     });
-  }
 
-  if (response.status === 401) {
-    console.log("[Auth] Login failed: invalid credentials");
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-  }
+    console.log(`[Auth] FastAPI response: ${response.status}`);
 
-  // Forward other responses
-  const data = await response.text();
-  return new Response(data, {
-    status: response.status,
-    headers: {
-      "Content-Type": response.headers.get("Content-Type") || "application/json",
-      ...headers,
-    },
-  });
+    // Forward Set-Cookie from FastAPI
+    const setCookie = response.headers.get("Set-Cookie");
+
+    if (response.status === 303) {
+      // Login successful — return redirect to dashboard with cookie
+      console.log("[Auth] Login successful, redirecting to /dashboard");
+      const headers: Record<string, string> = {
+        Location: "/dashboard",
+      };
+      if (setCookie) {
+        headers["Set-Cookie"] = setCookie;
+      }
+      return new Response(null, { status: 303, headers });
+    }
+
+    // Login failed
+    return NextResponse.json(
+      { error: "Invalid credentials" },
+      { status: response.status }
+    );
+  } catch (error) {
+    console.error("[Auth] Login error:", error);
+    return NextResponse.json(
+      { error: "Backend service unavailable" },
+      { status: 503 }
+    );
+  }
 }
