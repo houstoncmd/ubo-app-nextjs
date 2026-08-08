@@ -1,72 +1,46 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
+import { proxyToBackend } from "@/lib/api-client";
 
-// API proxy route - forwards all requests to FastAPI backend
+// Generic API proxy route - forwards all requests to FastAPI backend
+// This is a catch-all for any API routes not handled by specific route files.
+// URL pattern: /api/proxy/[...path] -> http://backend:8000/api/[...path]
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { path: string[] } }
 ) {
-  return proxyRequest(request, params.path, "GET");
+  const path = `/api/${params.path.join("/")}`;
+  return proxyToBackend(path, request, { method: "GET" });
 }
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { path: string[] } }
 ) {
-  return proxyRequest(request, params.path, "POST");
+  const path = `/api/${params.path.join("/")}`;
+  return proxyToBackend(path, request, { method: "POST" });
 }
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: { path: string[] } }
 ) {
-  return proxyRequest(request, params.path, "PUT");
+  const path = `/api/${params.path.join("/")}`;
+  return proxyToBackend(path, request, { method: "PUT" });
 }
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { path: string[] } }
 ) {
-  return proxyRequest(request, params.path, "DELETE");
+  const path = `/api/${params.path.join("/")}`;
+  return proxyToBackend(path, request, { method: "DELETE" });
 }
 
-async function proxyRequest(
+export async function PATCH(
   request: NextRequest,
-  pathSegments: string[],
-  method: string
+  { params }: { params: { path: string[] } }
 ) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-  const path = pathSegments.join("/");
-
-  try {
-    const url = new URL(`/api/${path}`, apiUrl);
-    url.search = request.nextUrl.search;
-
-    const init: RequestInit = {
-      method,
-      headers: {
-        "Content-Type": request.headers.get("Content-Type") || "application/json",
-        Cookie: request.headers.get("cookie") || "",
-        Authorization: request.headers.get("authorization") || "",
-      },
-    };
-
-    if (method !== "GET" && method !== "DELETE") {
-      init.body = await request.text();
-    }
-
-    const response = await fetch(url.toString(), init);
-    const data = await response.text();
-
-    return new NextResponse(data, {
-      status: response.status,
-      headers: {
-        "Content-Type": response.headers.get("Content-Type") || "application/json",
-      },
-    });
-  } catch {
-    return NextResponse.json(
-      { error: "Backend service unavailable", status: 503 },
-      { status: 503 }
-    );
-  }
+  const path = `/api/${params.path.join("/")}`;
+  return proxyToBackend(path, request, { method: "PATCH" });
 }

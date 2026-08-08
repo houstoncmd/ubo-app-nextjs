@@ -1,71 +1,23 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
+import { proxyToBackend } from "@/lib/api-client";
 
 // Better Auth catch-all route
-// This handles all /api/auth/* requests and proxies to the backend
+// Handles all /api/auth/* requests not covered by specific route files
+// (login, me, logout have their own route files)
+// This catches: /api/auth/register, /api/auth/forgot-password, etc.
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { all: string[] } }
 ) {
-  const path = params.all.join("/");
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
-  try {
-    const url = new URL(`/api/auth/${path}`, apiUrl);
-    url.search = request.nextUrl.search;
-
-    const response = await fetch(url.toString(), {
-      method: "GET",
-      headers: {
-        Cookie: request.headers.get("cookie") || "",
-      },
-    });
-
-    const data = await response.text();
-    return new NextResponse(data, {
-      status: response.status,
-      headers: {
-        "Content-Type": response.headers.get("Content-Type") || "application/json",
-      },
-    });
-  } catch {
-    return NextResponse.json(
-      { error: "Auth service unavailable" },
-      { status: 503 }
-    );
-  }
+  const path = `/api/auth/${params.all.join("/")}`;
+  return proxyToBackend(path, request, { method: "GET" });
 }
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { all: string[] } }
 ) {
-  const path = params.all.join("/");
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
-  try {
-    const body = await request.text();
-    const url = new URL(`/api/auth/${path}`, apiUrl);
-
-    const response = await fetch(url.toString(), {
-      method: "POST",
-      headers: {
-        "Content-Type": request.headers.get("Content-Type") || "application/json",
-        Cookie: request.headers.get("cookie") || "",
-      },
-      body,
-    });
-
-    const data = await response.text();
-    return new NextResponse(data, {
-      status: response.status,
-      headers: {
-        "Content-Type": response.headers.get("Content-Type") || "application/json",
-      },
-    });
-  } catch {
-    return NextResponse.json(
-      { error: "Auth service unavailable" },
-      { status: 503 }
-    );
-  }
+  const path = `/api/auth/${params.all.join("/")}`;
+  return proxyToBackend(path, request, { method: "POST" });
 }

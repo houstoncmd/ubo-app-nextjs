@@ -15,12 +15,33 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-    // TODO: Implement Better Auth login
-    console.log("Login:", { employeeId, password });
-    setTimeout(() => {
-      setIsLoading(false);
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          employee_id: employeeId,
+          password: password,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.detail || data.error || `Login failed (${response.status})`);
+      }
+
+      // Login successful - the session_id cookie has been set by the backend
+      // via the proxy route. Redirect to dashboard.
       router.push("/dashboard");
-    }, 1000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

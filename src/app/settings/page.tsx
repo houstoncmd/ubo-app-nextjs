@@ -1,25 +1,70 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import PageHeader from "@/components/PageHeader";
+import { apiFetch } from "@/lib/api-client";
 
-const mockUsers = [
-  { id: 1, name: "Somchai Prasert", employeeId: "EMP001", role: "Admin", status: "active", lastLogin: "2024-01-15 14:30" },
-  { id: 2, name: "Nattaya Kriangkrai", employeeId: "EMP002", role: "User", status: "active", lastLogin: "2024-01-15 13:45" },
-  { id: 3, name: "Prasert Meesuk", employeeId: "EMP003", role: "User", status: "active", lastLogin: "2024-01-14 09:20" },
-  { id: 4, name: "Wichai Thongdee", employeeId: "EMP004", role: "Viewer", status: "inactive", lastLogin: "2024-01-10 16:15" },
-];
+interface User {
+  id: number;
+  name: string;
+  employee_id: string;
+  email: string;
+  role: string;
+  is_active: boolean;
+  last_login?: string;
+}
 
-const mockLogs = [
-  { id: 1, user: "somchai.p", action: "Login", details: "Successful LDAP authentication", time: "2024-01-15 14:30", ip: "10.0.1.100" },
-  { id: 2, user: "nattaya.k", action: "Search", details: "Searched company 0105546000456", time: "2024-01-15 13:45", ip: "10.0.1.101" },
-  { id: 3, user: "prasert.m", action: "Failed Login", details: "Invalid password attempt", time: "2024-01-15 12:20", ip: "10.0.1.102" },
-  { id: 4, user: "wichai.t", action: "Export", details: "Exported results for 0105546000321", time: "2024-01-15 11:10", ip: "10.0.1.103" },
-];
+interface LogEntry {
+  id: number;
+  user: string;
+  action: string;
+  details: string;
+  time: string;
+  ip: string;
+}
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("users");
+  const [users, setUsers] = useState<User[]>([]);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [loadingLogs, setLoadingLogs] = useState(true);
+
+  const fetchUsers = useCallback(async () => {
+    setLoadingUsers(true);
+    try {
+      const response = await apiFetch<{ items?: User[] } | User[]>("/api/users");
+      if (response.data) {
+        const items = Array.isArray(response.data) ? response.data : (response.data as { items: User[] }).items;
+        if (items) setUsers(items);
+      }
+    } catch {
+      // Keep empty array on error
+    } finally {
+      setLoadingUsers(false);
+    }
+  }, []);
+
+  const fetchLogs = useCallback(async () => {
+    setLoadingLogs(true);
+    try {
+      const response = await apiFetch<{ items?: LogEntry[] } | LogEntry[]>("/api/logs");
+      if (response.data) {
+        const items = Array.isArray(response.data) ? response.data : (response.data as { items: LogEntry[] }).items;
+        if (items) setLogs(items);
+      }
+    } catch {
+      // Keep empty array on error
+    } finally {
+      setLoadingLogs(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === "users") fetchUsers();
+    if (activeTab === "logs") fetchLogs();
+  }, [activeTab, fetchUsers, fetchLogs]);
 
   return (
     <div className="min-h-screen bg-lhb-bg">
@@ -60,10 +105,19 @@ export default function SettingsPage() {
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold text-slate-800">User Access Management</h3>
-                  <button className="lhb-btn-primary flex items-center gap-2">
-                    <i className="bi bi-plus-lg"></i>
-                    Add User
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={fetchUsers}
+                      className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2"
+                    >
+                      <i className="bi bi-arrow-clockwise"></i>
+                      Refresh
+                    </button>
+                    <button className="lhb-btn-primary flex items-center gap-2">
+                      <i className="bi bi-plus-lg"></i>
+                      Add User
+                    </button>
+                  </div>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="lhb-table">
@@ -71,6 +125,7 @@ export default function SettingsPage() {
                       <tr>
                         <th>Name</th>
                         <th>Employee ID</th>
+                        <th>Email</th>
                         <th>Role</th>
                         <th>Status</th>
                         <th>Last Login</th>
@@ -78,31 +133,58 @@ export default function SettingsPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {mockUsers.map((user) => (
-                        <tr key={user.id}>
-                          <td className="font-medium text-slate-800">{user.name}</td>
-                          <td><code className="text-xs bg-slate-100 px-2 py-1 rounded">{user.employeeId}</code></td>
-                          <td>
-                            <span className={`lhb-badge-${user.role === "Admin" ? "info" : "success"}`}>
-                              {user.role}
-                            </span>
-                          </td>
-                          <td>
-                            <span className={`lhb-badge-${user.status === "active" ? "success" : "danger"}`}>
-                              {user.status}
-                            </span>
-                          </td>
-                          <td className="text-sm text-slate-500">{user.lastLogin}</td>
-                          <td>
-                            <button className="text-blue-600 hover:text-blue-800 text-sm mr-3">
-                              <i className="bi bi-pencil"></i> Edit
-                            </button>
-                            <button className="text-red-500 hover:text-red-700 text-sm">
-                              <i className="bi bi-trash"></i>
-                            </button>
+                      {loadingUsers ? (
+                        // Loading skeleton
+                        Array.from({ length: 4 }).map((_, i) => (
+                          <tr key={i}>
+                            <td><div className="h-4 bg-slate-200 rounded animate-pulse w-32"></div></td>
+                            <td><div className="h-4 bg-slate-200 rounded animate-pulse w-20"></div></td>
+                            <td><div className="h-4 bg-slate-200 rounded animate-pulse w-36"></div></td>
+                            <td><div className="h-5 bg-slate-200 rounded-full animate-pulse w-16"></div></td>
+                            <td><div className="h-5 bg-slate-200 rounded-full animate-pulse w-14"></div></td>
+                            <td><div className="h-4 bg-slate-200 rounded animate-pulse w-28"></div></td>
+                            <td><div className="h-4 bg-slate-200 rounded animate-pulse w-16"></div></td>
+                          </tr>
+                        ))
+                      ) : users.length > 0 ? (
+                        users.map((user) => (
+                          <tr key={user.id}>
+                            <td className="font-medium text-slate-800">{user.name}</td>
+                            <td>
+                              <code className="text-xs bg-slate-100 px-2 py-1 rounded">{user.employee_id}</code>
+                            </td>
+                            <td className="text-sm text-slate-500">{user.email || "-"}</td>
+                            <td>
+                              <span className={`lhb-badge-${user.role === "admin" ? "info" : "success"}`}>
+                                {user.role}
+                              </span>
+                            </td>
+                            <td>
+                              <span className={`lhb-badge-${user.is_active ? "success" : "danger"}`}>
+                                {user.is_active ? "active" : "inactive"}
+                              </span>
+                            </td>
+                            <td className="text-sm text-slate-500">
+                              {user.last_login ? new Date(user.last_login).toLocaleString() : "-"}
+                            </td>
+                            <td>
+                              <button className="text-blue-600 hover:text-blue-800 text-sm mr-3">
+                                <i className="bi bi-pencil"></i> Edit
+                              </button>
+                              <button className="text-red-500 hover:text-red-700 text-sm">
+                                <i className="bi bi-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={7} className="text-center py-8 text-slate-400">
+                            <i className="bi bi-people text-4xl mb-2 block"></i>
+                            <p className="text-sm">No users found.</p>
                           </td>
                         </tr>
-                      ))}
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -149,8 +231,8 @@ export default function SettingsPage() {
                     <div>
                       <p className="font-medium text-amber-800">LDAP Authentication</p>
                       <p className="text-sm text-amber-700 mt-1">
-                        Better Auth with LDAP plugin is configured but requires backend connection.
-                        Configure the LDAP server settings below.
+                        LDAP authentication is configured via the FastAPI backend.
+                        The backend handles LDAP binding and session management.
                       </p>
                     </div>
                   </div>
@@ -183,7 +265,16 @@ export default function SettingsPage() {
             {/* Activity Logs Tab */}
             {activeTab === "logs" && (
               <div>
-                <h3 className="text-lg font-semibold text-slate-800 mb-6">Activity Logs</h3>
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-slate-800">Activity Logs</h3>
+                  <button
+                    onClick={fetchLogs}
+                    className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2"
+                  >
+                    <i className="bi bi-arrow-clockwise"></i>
+                    Refresh
+                  </button>
+                </div>
                 <div className="overflow-x-auto">
                   <table className="lhb-table">
                     <thead>
@@ -196,21 +287,40 @@ export default function SettingsPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {mockLogs.map((log) => (
-                        <tr key={log.id}>
-                          <td className="text-sm text-slate-500">{log.time}</td>
-                          <td className="font-medium">{log.user}</td>
-                          <td>
-                            <span className={`lhb-badge-${
-                              log.action.includes("Failed") ? "danger" : "info"
-                            }`}>
-                              {log.action}
-                            </span>
+                      {loadingLogs ? (
+                        Array.from({ length: 4 }).map((_, i) => (
+                          <tr key={i}>
+                            <td><div className="h-4 bg-slate-200 rounded animate-pulse w-28"></div></td>
+                            <td><div className="h-4 bg-slate-200 rounded animate-pulse w-20"></div></td>
+                            <td><div className="h-5 bg-slate-200 rounded-full animate-pulse w-16"></div></td>
+                            <td><div className="h-4 bg-slate-200 rounded animate-pulse w-40"></div></td>
+                            <td><div className="h-4 bg-slate-200 rounded animate-pulse w-24"></div></td>
+                          </tr>
+                        ))
+                      ) : logs.length > 0 ? (
+                        logs.map((log) => (
+                          <tr key={log.id}>
+                            <td className="text-sm text-slate-500">{log.time}</td>
+                            <td className="font-medium">{log.user}</td>
+                            <td>
+                              <span className={`lhb-badge-${
+                                log.action.includes("Failed") ? "danger" : "info"
+                              }`}>
+                                {log.action}
+                              </span>
+                            </td>
+                            <td className="text-sm text-slate-600">{log.details}</td>
+                            <td className="text-sm text-slate-500 font-mono">{log.ip}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={5} className="text-center py-8 text-slate-400">
+                            <i className="bi bi-journal-text text-4xl mb-2 block"></i>
+                            <p className="text-sm">No activity logs found.</p>
                           </td>
-                          <td className="text-sm text-slate-600">{log.details}</td>
-                          <td className="text-sm text-slate-500 font-mono">{log.ip}</td>
                         </tr>
-                      ))}
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -251,6 +361,8 @@ export default function SettingsPage() {
                     <span>20.x</span>
                     <span className="text-slate-500">Build:</span>
                     <span>Standalone (Docker)</span>
+                    <span className="text-slate-500">API Backend:</span>
+                    <span>FastAPI (Python)</span>
                   </div>
                 </div>
                 <button className="lhb-btn-primary">

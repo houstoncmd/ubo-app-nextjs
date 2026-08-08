@@ -1,18 +1,57 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { apiFetch } from "@/lib/api-client";
+
+interface SearchResult {
+  id: number;
+  registration_id: string;
+  company_name: string;
+  status: string;
+  ubo_count: number;
+}
 
 export default function SearchPage() {
   const [registrationId, setRegistrationId] = useState("");
   const [language, setLanguage] = useState("TH");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [result, setResult] = useState<SearchResult | null>(null);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // TODO: Call proxy to FastAPI backend
-    console.log("Search:", { registrationId, language });
-    setTimeout(() => setIsLoading(false), 2000);
+    setError("");
+    setResult(null);
+
+    try {
+      const response = await apiFetch<SearchResult>("/api/ubo/search", {
+        method: "POST",
+        body: JSON.stringify({
+          registration_id: registrationId,
+          language: language,
+        }),
+      });
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      if (response.data) {
+        // If the result has an ID, redirect to the result page
+        if (response.data.id) {
+          router.push(`/result/${response.data.id}`);
+        } else {
+          setResult(response.data);
+        }
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Search failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -47,6 +86,16 @@ export default function SearchPage() {
           Enter the 13-digit Thai company registration ID to analyze the
           ownership structure.
         </div>
+
+        {error && (
+          <div
+            className="flex items-center gap-2 p-3 mb-4 rounded-lg text-sm"
+            style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)" }}
+          >
+            <i className="bi bi-exclamation-triangle text-red-400"></i>
+            <span className="text-red-200">{error}</span>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="flex flex-wrap gap-3 items-end">
@@ -132,6 +181,33 @@ export default function SearchPage() {
             <br />
             <span className="text-xs">This may take a few seconds for deep structures.</span>
           </p>
+        </div>
+      )}
+
+      {/* Quick Result (if no redirect happened) */}
+      {result && !isLoading && (
+        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-5 mb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h5 className="font-semibold text-slate-800">
+                {result.company_name}
+              </h5>
+              <p className="text-sm text-slate-500">
+                Registration: {result.registration_id} &middot; Status: {result.status}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="bg-emerald-100 text-emerald-700 text-sm font-medium px-3 py-1 rounded-full">
+                {result.ubo_count} UBOs
+              </span>
+              <button
+                onClick={() => router.push(`/result/${result.id}`)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+              >
+                <i className="bi bi-eye me-1"></i>View Results
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
