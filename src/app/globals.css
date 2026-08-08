@@ -1635,3 +1635,497 @@ body {
 .sortable:hover {
   color: #334155;
 }
+
+/* ============================================================
+   Missing Enterprise CSS (restored from original)
+   ============================================================ */
+
+/* === Badges === */
+.badge-ubo {
+  background: rgba(239,68,68,0.12);
+  color: var(--lhb-danger-dark);
+}
+
+.badge-investigation {
+  background: rgba(245,158,11,0.12);
+  color: var(--lhb-gold-dark);
+}
+
+.badge-below {
+  background: #f1f5f9;
+  color: var(--lhb-text-secondary);
+}
+
+.badge-compliant {
+  background: rgba(16,185,129,0.12);
+  color: var(--lhb-success-dark);
+}
+
+.badge-noncompliant {
+  background: rgba(239,68,68,0.12);
+  color: #dc2626;
+  padding: 0.25em 0.55em;
+  border-radius: 0.375rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.alert-enterprise {
+  border: none;
+  border-radius: var(--lhb-radius-sm);
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+}
+
+.alert-enterprise.alert-info {
+  background: rgba(37,99,235,0.06);
+  color: var(--lhb-primary-dark);
+}
+
+.alert-enterprise.alert-warning {
+  background: rgba(245,158,11,0.06);
+  color: var(--lhb-gold-dark);
+}
+
+.alert-enterprise.alert-success {
+  background: rgba(16,185,129,0.06);
+  color: var(--lhb-success-dark);
+}
+
+.alert-enterprise.alert-danger {
+  background: rgba(239,68,68,0.06);
+  color: var(--lhb-danger-dark);
+}
+
+
+.modal-content-enterprise {
+  border: none;
+  border-radius: var(--lhb-radius-lg);
+  box-shadow: var(--lhb-shadow-lg);
+  overflow: hidden;
+}
+
+.modal-content-enterprise .modal-header {
+  background: var(--lhb-bg-alt);
+  border-bottom: 1px solid var(--lhb-border);
+  padding: 1rem 1.25rem;
+}
+
+.modal-content-enterprise .modal-footer {
+  border-top: 1px solid var(--lhb-border);
+  padding: 0.75rem 1.25rem;
+}
+
+/* ─── Filter Bar ─── */
+.filter-bar {
+  background: var(--lhb-surface);
+  border: 1px solid var(--lhb-border);
+  border-radius: var(--lhb-radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.footer-enterprise {
+  background: var(--lhb-navy);
+  color: rgba(255,255,255,0.6);
+  padding: 0.75rem 0;
+  font-size: 0.78rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin-top: auto;
+}
+
+.footer-enterprise a {
+  color: var(--lhb-gold-light);
+  text-decoration: none;
+}
+
+.footer-enterprise a:hover {
+  color: var(--lhb-gold);
+}
+
+/* ============================================================
+   NewFindingUBO — Premium Login Redesign
+   ============================================================ */
+.login-page {
+  height: 100vh; /* บังคับให้สูงเท่าหน้าจอพอดี */
+  min-height: 100vh;
+  display: flex;
+  background: #020617;
+  overflow: hidden; /* บล็อกไม่ให้มี Scrollbar ในหน้าคอมพิวเตอร์ */
+}
+
+/* ─── Left Panel (Branding) ─── */
+.login-left {
+  flex: 1.2;
+  background: radial-gradient(circle at 30% 30%, #0f172a 0%, #020617 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5rem;
+}
+
+/* Decorative High-End Blur Orbs */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 1;
+  opacity: 0.12;
+}
+.glow-1 {
+  top: -10%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: var(--lhb-gold);
+}
+.glow-2 {
+  bottom: -10%;
+  left: 10%;
+  width: 400px;
+  height: 400px;
+  background: var(--lhb-primary);
+}
+
+.login-left .grid-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0.04;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: linear-gradient(to right, rgba(0,0,0,1) 50%, rgba(0,0,0,0));
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 50%, rgba(0,0,0,0));
+}
+
+.login-left .content {
+  position: relative;
+  z-index: 3;
+  max-width: 500px;
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-left .brand {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 3.5rem;
+}
+
+.login-left .brand-logo {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #fbbf24, #d97706);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #020617;
+  box-shadow: 0 4px 20px rgba(217,119,6,0.25);
+}
+
+.login-left .brand-text h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.login-left .brand-text span {
+  font-size: 0.72rem;
+  color: var(--lhb-gold-light);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+}
+
+.login-left h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.5px;
+}
+
+.login-left .text-gradient {
+  background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+  -webkit-background-clip: text; /* สำหรับ Chrome, Safari, Edge */
+  background-clip: text;         /* Standard Property (เพิ่มบรรทัดนี้เพื่อลบ Warning) */
+  -webkit-text-fill-color: transparent;
+}
+
+
+.login-left .lead {
+  font-size: 1rem;
+  color: #94a3b8;
+  margin-bottom: 3rem;
+  line-height: 1.7;
+}
+
+/* Feature Cards (Glassmorphism Effect) */
+.login-left .feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.login-left .feature-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0.85rem 1.25rem;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-left .feature-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(251, 191, 36, 0.2);
+  transform: translateX(6px);
+  color: #fff;
+}
+
+.feature-icon-wrapper {
+  width: 28px;
+  height: 28px;
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--lhb-gold-light);
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+
+/* ─── Right Panel (Login Form) ─── */
+.login-right {
+  flex: 0.8;
+  background: #ffffff;
+  display: flex;
+  position: relative;
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.2);
+}
+
+.login-right-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 3rem 4.5rem 6.5rem; /* เพิ่มพื้นที่ล่างหลบขอบพรีเมียมฟุตเตอร์ */
+  min-height: 100%;
+}
+
+.login-right .form-wrapper {
+  width: 100%;
+  max-width: 380px;
+}
+
+.login-right .form-header {
+  margin-bottom: 2.25rem;
+}
+
+.login-right .form-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.35rem;
+  letter-spacing: -0.3px;
+}
+
+.login-right .form-header p {
+  color: #64748b;
+  font-size: 0.88rem;
+}
+
+.login-right .divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 1.75rem 0;
+}
+
+.login-right .divider::before,
+.login-right .divider::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* Premium Inputs */
+.premium-input-group {
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.premium-input-group:focus-within {
+  border-color: var(--lhb-primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08), 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.premium-input-group .input-group-text {
+  background: transparent;
+  border: none;
+  padding-left: 1rem;
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.premium-input-group .form-control {
+  background: transparent;
+  border: none;
+  font-size: 0.92rem;
+  padding: 0.75rem 1rem 0.75rem 0.5rem;
+  color: #0f172a;
+}
+
+.premium-input-group .form-control:focus {
+  box-shadow: none;
+  background: transparent;
+}
+
+.form-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.4rem;
+}
+
+/* Interactive Elements */
+.custom-checkbox .form-check-input {
+  border-radius: 4px;
+  border-color: #cbd5e1;
+  cursor: pointer;
+}
+.custom-checkbox .form-check-input:checked {
+  background-color: var(--lhb-primary);
+  border-color: var(--lhb-primary);
+}
+.custom-checkbox .form-check-label {
+  font-size: 0.85rem;
+  color: #475569;
+  cursor: pointer;
+  user-select: none;
+}
+
+.forgot-link {
+  font-size: 0.85rem;
+  color: var(--lhb-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+.forgot-link:hover {
+  color: var(--lhb-primary-dark);
+  text-decoration: underline;
+}
+
+/* Premium Button with Arrow Micro-interaction */
+.btn-premium-submit {
+  background: linear-gradient(135deg, #1e40af 0%, #0f172a 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.8rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.2);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.btn-premium-submit i {
+  transition: transform 0.3s ease;
+}
+
+.btn-premium-submit:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+  transform: translateY(-1px);
+  color: #fff;
+}
+
+.btn-premium-submit:hover i {
+  transform: translateX(4px);
+}
+
+.terms-text a {
+  color: #475569;
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px dotted #cbd5e1;
+}
+.terms-text a:hover {
+  color: var(--lhb-primary);
+  border-bottom-style: solid;
+}
+
+/* ─── Premium Center-Bottom Footer ─── */
+.login-footer-premium {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.login-footer-line {
+  width: 32px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--lhb-gold-light), transparent);
+  margin: 0 auto 0.6rem auto;
+  border-radius: 2px;
+}
+
+.login-footer-text {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.login-footer-text i {
+  color: var(--lhb-gold);
+  font-size: 0.75rem;
+}
+
+.login-footer-text strong {
+  color: #475569;
+  font-weight: 700;
+}
+
