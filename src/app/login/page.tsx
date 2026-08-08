@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -9,12 +9,20 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showForgotModal, setShowForgotModal] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+
+    // Strip leading "p" from Employee ID before submit
+    // Users habitually type e.g. "p6073", but AD accounts are the digits only ("6073")
+    let submitId = employeeId.trim();
+    if (/^[pP]\d+$/.test(submitId)) {
+      submitId = submitId.slice(1); // p6073 -> 6073
+    }
 
     try {
       const response = await fetch("/api/auth/login", {
@@ -24,270 +32,393 @@ export default function LoginPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          employee_id: employeeId,
+          employee_id: submitId,
           password: password,
         }),
       });
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        throw new Error(data.detail || data.error || `Login failed (${response.status})`);
+        throw new Error(
+          data.detail || data.error || `Login failed (${response.status})`
+        );
       }
 
       // Login successful - the session_id cookie has been set by the backend
-      // via the proxy route. Redirect to dashboard.
       router.push("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed. Please try again.");
+      setError(
+        err instanceof Error ? err.message : "Login failed. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Panel — Branding & Features */}
-      <div
-        className="hidden lg:flex lg:w-1/2 p-12 flex-col justify-center relative overflow-hidden"
-        style={{
-          background:
-            "linear-gradient(135deg, var(--lhb-navy) 0%, #1e3a5f 50%, var(--lhb-navy) 100%)",
-        }}
-      >
-        {/* Background decorations - grid lines */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-        ></div>
-        {/* Glow orbs */}
-        <div className="absolute top-[-100px] right-[-100px] w-[400px] h-[400px] rounded-full bg-amber-500/[0.06] blur-3xl"></div>
-        <div className="absolute bottom-[-50px] left-[-50px] w-[300px] h-[300px] rounded-full bg-blue-500/[0.06] blur-3xl"></div>
+    <>
+      <div className="login-page">
+        {/* Left Panel — Branding & Features */}
+        <div className="login-left">
+          <div className="grid-lines"></div>
+          <div className="glow-orb glow-1"></div>
+          <div className="glow-orb glow-2"></div>
 
-        <div className="relative z-10">
-          {/* Brand Logo */}
-          <div className="flex items-center gap-4 mb-12">
-            <div
-              className="w-14 h-14 rounded-xl flex items-center justify-center font-extrabold text-lg shadow-lg"
-              style={{
-                background: "linear-gradient(135deg, #f59e0b, #d97706)",
-                color: "var(--lhb-navy)",
-              }}
-            >
-              LHB
+          <div className="content">
+            <div className="brand">
+              <div className="brand-logo">LHB</div>
+              <div className="brand-text">
+                <h2>LH Bank</h2>
+                <span>Ultimate Beneficial Ownership Analysis</span>
+              </div>
             </div>
-            <div>
-              <h2 className="text-white text-xl font-bold">LH Bank</h2>
-              <span className="text-amber-400 text-xs uppercase tracking-widest font-medium">
-                Ultimate Beneficial Ownership Analysis
-              </span>
-            </div>
-          </div>
 
-          {/* Title */}
-          <h1 className="text-white text-4xl font-bold mb-2 leading-tight">
-            UBO
-            <br />
-            <span
-              className="text-4xl font-bold"
-              style={{
-                background:
-                  "linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              Analysis Platform
-            </span>
-          </h1>
+            <h1>
+              UBO
+              <br />
+              <span className="text-gradient">Analysis Platform</span>
+            </h1>
 
-          <p className="text-white/60 text-sm mb-10 max-w-md leading-relaxed">
-            Secure, compliant, and intelligent ownership structure analysis
-            for financial institutions and regulatory compliance.
-          </p>
+            <p className="lead">
+              Secure, compliant, and intelligent ownership structure analysis
+              for financial institutions and regulatory compliance.
+            </p>
 
-          {/* Feature list */}
-          <div className="space-y-5">
-            <div className="flex items-center gap-4">
-              <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(37,99,235,0.1)" }}
-              >
-                <i className="bi bi-shield-check text-blue-400 text-lg"></i>
+            <div className="feature-list">
+              <div className="feature-item">
+                <div className="feature-icon-wrapper">
+                  <i className="bi bi-shield-check"></i>
+                </div>
+                <span>
+                  Advanced 6-level ownership hierarchy traversal
+                </span>
               </div>
-              <span className="text-white/80 text-sm">
-                Advanced 6-level ownership hierarchy traversal
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(16,185,129,0.1)" }}
-              >
-                <i className="bi bi-activity text-emerald-400 text-lg"></i>
+              <div className="feature-item">
+                <div className="feature-icon-wrapper">
+                  <i className="bi bi-activity"></i>
+                </div>
+                <span>
+                  Real-time compliance checking (&ge;15% threshold)
+                </span>
               </div>
-              <span className="text-white/80 text-sm">
-                Real-time compliance checking (&ge;15% threshold)
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(6,182,212,0.1)" }}
-              >
-                <i className="bi bi-diagram-3 text-cyan-400 text-lg"></i>
+              <div className="feature-item">
+                <div className="feature-icon-wrapper">
+                  <i className="bi bi-diagram-3"></i>
+                </div>
+                <span>
+                  Interactive ownership graph visualization
+                </span>
               </div>
-              <span className="text-white/80 text-sm">
-                Interactive ownership graph visualization
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(245,158,11,0.1)" }}
-              >
-                <i className="bi bi-fingerprint text-amber-400 text-lg"></i>
+              <div className="feature-item">
+                <div className="feature-icon-wrapper">
+                  <i className="bi bi-fingerprint"></i>
+                </div>
+                <span>
+                  Enterprise-grade security with full audit trail
+                </span>
               </div>
-              <span className="text-white/80 text-sm">
-                Enterprise-grade security with full audit trail
-              </span>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Right Panel — Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-white">
-        <div className="w-full max-w-md">
-          {/* Mobile brand */}
-          <div className="lg:hidden flex items-center gap-3 mb-8">
-            <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg"
-              style={{
-                background: "linear-gradient(135deg, #f59e0b, #d97706)",
-                color: "var(--lhb-navy)",
-              }}
-            >
-              LHB
-            </div>
-            <div>
-              <h1 className="text-slate-800 text-xl font-bold">
-                UBO Analysis System
-              </h1>
-              <p className="text-amber-500 text-xs uppercase tracking-widest">
-                LH Bank &bull; Enterprise
+        {/* Right Panel — Login Form */}
+        <div className="login-right">
+          <div className="login-right-inner">
+            <div className="form-wrapper">
+              <div className="form-header">
+                <h2>Welcome back</h2>
+                <p>Sign in to access the UBO Analysis System</p>
+              </div>
+
+              {error && (
+                <div
+                  className="alert alert-enterprise alert-danger alert-dismissible fade show"
+                  role="alert"
+                >
+                  <i className="bi bi-exclamation-triangle me-2"></i>
+                  {error}
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setError("")}
+                  ></button>
+                </div>
+              )}
+
+              <div className="divider">
+                <span>Sign in with your credentials</span>
+              </div>
+
+              {/* Login Form */}
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <label htmlFor="employee_id" className="form-label">
+                    Employee ID
+                  </label>
+                  <div className="input-group premium-input-group">
+                    <span className="input-group-text">
+                      <i className="bi bi-person-badge"></i>
+                    </span>
+                    <input
+                      type="text"
+                      className="form-control form-control-lg"
+                      id="employee_id"
+                      autoComplete="off"
+                      pattern="[A-Za-z0-9]+"
+                      maxLength={8}
+                      title="Only English letters and numbers, max 8 characters"
+                      placeholder="Enter your employee ID"
+                      value={employeeId}
+                      onChange={(e) =>
+                        setEmployeeId(
+                          e.target.value.replace(/[^A-Za-z0-9]/g, "")
+                        )
+                      }
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="password" className="form-label">
+                    Password
+                  </label>
+                  <div className="input-group premium-input-group">
+                    <span className="input-group-text">
+                      <i className="bi bi-lock"></i>
+                    </span>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      className="form-control form-control-lg"
+                      id="password"
+                      autoComplete="off"
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      className="btn btn-outline-secondary border"
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                        borderRadius:
+                          "0 var(--lhb-radius-sm) var(--lhb-radius-sm) 0",
+                        padding: "0.375rem 0.75rem",
+                      }}
+                    >
+                      <i
+                        className={`bi ${
+                          showPassword ? "bi-eye-slash" : "bi-eye"
+                        }`}
+                        id="togglePasswordIcon"
+                      ></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                  <div className="form-check custom-checkbox d-none">
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id="remember"
+                      name="remember"
+                    />
+                    <label className="form-check-label" htmlFor="remember">
+                      Remember me
+                    </label>
+                  </div>
+                  <a
+                    href="#"
+                    className="forgot-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowForgotModal(true);
+                    }}
+                  >
+                    Forgot password?
+                  </a>
+                </div>
+
+                <button
+                  type="submit"
+                  className="btn btn-premium-submit w-100"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <i className="bi bi-arrow-repeat animate-spin"></i>
+                      <span>Signing in...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Sign In</span>
+                      <i className="bi bi-arrow-right"></i>
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <p className="text-muted text-center small mt-5 terms-text">
+                By signing in, you agree to our <br />
+                <a href="/terms">Terms of Service</a> and{" "}
+                <a href="/privacy">Privacy Policy</a>
               </p>
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold text-slate-800 mb-1">
-            Welcome back
-          </h2>
-          <p className="text-slate-500 mb-6 text-sm">
-            Sign in to access the UBO Analysis System
-          </p>
-
-          {error && (
-            <div
-              className="flex items-center gap-2 p-3 mb-4 rounded-lg text-sm text-red-700"
-              style={{ background: "#fef2f2", border: "1px solid #fecaca" }}
-            >
-              <i className="bi bi-exclamation-triangle"></i>
-              {error}
+          {/* Premium Footer */}
+          <div className="login-footer-premium">
+            <div className="login-footer-line"></div>
+            <div className="login-footer-text">
+              <i className="bi bi-pencil-ruler"></i>
+              <span>
+                Designed by{" "}
+                <strong>Digital and Automation Department</strong>
+              </span>
             </div>
-          )}
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px bg-slate-200"></div>
-            <span className="text-xs text-slate-400">
-              Sign in with your credentials
-            </span>
-            <div className="flex-1 h-px bg-slate-200"></div>
           </div>
+        </div>
+      </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Employee ID
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  <i className="bi bi-person-badge"></i>
-                </span>
-                <input
-                  type="text"
-                  className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                  placeholder="Enter your employee ID"
-                  value={employeeId}
-                  onChange={(e) =>
-                    setEmployeeId(
-                      e.target.value.replace(/[^A-Za-z0-9]/g, "")
-                    )
-                  }
-                  maxLength={8}
-                  pattern="[A-Za-z0-9]+"
-                  title="Only English letters and numbers, max 8 characters"
-                  required
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Password
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  <i className="bi bi-lock"></i>
-                </span>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="w-full pl-10 pr-12 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+      {/* Forgot Password Modal */}
+      {showForgotModal && (
+        <div
+          className="modal fade show d-block"
+          tabIndex={-1}
+          aria-labelledby="forgotPasswordModalLabel"
+          aria-hidden="true"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowForgotModal(false);
+          }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div
+              className="modal-content border-0"
+              style={{ borderRadius: "1rem", overflow: "hidden" }}
+            >
+              <div
+                className="modal-header border-0"
+                style={{
+                  background: "linear-gradient(135deg, #0f172a, #1e3a5f)",
+                  padding: "1.5rem 1.5rem 1rem",
+                }}
+              >
+                <div className="text-center w-100">
+                  <div
+                    className="d-inline-flex align-items-center justify-content-center mb-2"
+                    style={{
+                      width: 56,
+                      height: 56,
+                      borderRadius: 14,
+                      background: "rgba(245,158,11,0.15)",
+                    }}
+                  >
+                    <i className="bi bi-lock text-warning fs-3"></i>
+                  </div>
+                  <h5
+                    className="modal-title text-white fw-bold"
+                    id="forgotPasswordModalLabel"
+                  >
+                    Forgot Password?
+                  </h5>
+                </div>
                 <button
                   type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                  onClick={() => setShowPassword(!showPassword)}
+                  className="btn-close btn-close-white position-absolute top-0 end-0 mt-3 me-3"
+                  onClick={() => setShowForgotModal(false)}
+                ></button>
+              </div>
+              <div
+                className="modal-body text-center p-4"
+                style={{ background: "#fff" }}
+              >
+                <div className="mb-3">
+                  <div
+                    className="d-inline-flex align-items-center justify-content-center mb-3"
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: "50%",
+                      background: "rgba(37,99,235,0.08)",
+                    }}
+                  >
+                    <i
+                      className="bi bi-info-circle fs-4"
+                      style={{ color: "var(--lhb-primary)" }}
+                    ></i>
+                  </div>
+                  <p
+                    className="mb-1 fw-semibold"
+                    style={{ color: "var(--lhb-text)", fontSize: "1rem" }}
+                  >
+                    Unable to access your account?
+                  </p>
+                  <p
+                    className="text-muted mb-0"
+                    style={{ fontSize: "0.88rem", lineHeight: 1.6 }}
+                  >
+                    If you have forgotten your password or are unable to sign
+                    in, please contact your system administrator or the{" "}
+                    <strong>IT Support Team</strong> for assistance.
+                  </p>
+                </div>
+
+                <hr style={{ opacity: 0.5 }} />
+
+                <div
+                  className="text-start"
+                  style={{ fontSize: "0.85rem", color: "#475569" }}
                 >
-                  <i
-                    className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
-                  ></i>
+                  <p
+                    className="fw-semibold mb-2"
+                    style={{ color: "var(--lhb-text)" }}
+                  >
+                    <i className="bi bi-headset me-1"></i> Contact
+                    Information:
+                  </p>
+                  <div className="d-flex align-items-center gap-2 mb-1 ps-3">
+                    <i
+                      className="bi bi-envelope"
+                      style={{ color: "var(--lhb-primary)" }}
+                    ></i>
+                    <span>it-support@lhbank.co.th</span>
+                  </div>
+                  <div className="d-flex align-items-center gap-2 mb-1 ps-3">
+                    <i
+                      className="bi bi-telephone"
+                      style={{ color: "var(--lhb-primary)" }}
+                    ></i>
+                    <span>+66 (0) 2123-4567</span>
+                  </div>
+                  <div className="d-flex align-items-center gap-2 ps-3">
+                    <i
+                      className="bi bi-building"
+                      style={{ color: "var(--lhb-primary)" }}
+                    ></i>
+                    <span>Digital and Automation Department</span>
+                  </div>
+                </div>
+              </div>
+              <div
+                className="modal-footer border-0 justify-content-center pb-4"
+                style={{ background: "#fff" }}
+              >
+                <button
+                  type="button"
+                  className="btn btn-primary px-4"
+                  onClick={() => setShowForgotModal(false)}
+                  style={{ borderRadius: "0.5rem" }}
+                >
+                  <i className="bi bi-check2 me-1"></i> Got it
                 </button>
               </div>
             </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {isLoading ? (
-                <>
-                  <i className="bi bi-arrow-repeat animate-spin"></i>
-                  Signing in...
-                </>
-              ) : (
-                <>
-                  <i className="bi bi-box-arrow-in-right"></i>
-                  Sign In
-                </>
-              )}
-            </button>
-          </form>
-
-          <p className="text-center text-xs text-slate-400 mt-6">
-            Authorized personnel only. All access is logged and monitored.
-          </p>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import http from "http";
+import * as http from "http";
 
 const API_HOST = "ubo-app";
 const API_PORT = 8000;
@@ -11,7 +11,7 @@ const API_PORT = 8000;
 export async function POST(request: NextRequest) {
   const body = await request.text();
 
-  return new Promise((resolve) => {
+  return new Promise<Response>((resolve) => {
     const req = http.request(
       {
         hostname: API_HOST,
