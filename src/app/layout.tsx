@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import AppShell from "@/components/AppShell";
 
 export const metadata: Metadata = {
   title: "UBO Application - LHB",
@@ -35,9 +34,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-lhb-bg font-lhb flex flex-col">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
