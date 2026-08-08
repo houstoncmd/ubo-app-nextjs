@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import PageHeader from "@/components/PageHeader";
 import { apiFetch } from "@/lib/api-client";
+import RolePermissionMatrix from "@/components/RolePermissionMatrix";
+import GroupManagement from "@/components/GroupManagement";
 
 interface User {
   id: number;
@@ -85,6 +87,7 @@ export default function SettingsPage() {
               { id: "auth", label: "Authentication", icon: "bi-shield-lock" },
               { id: "logs", label: "Activity Logs", icon: "bi-journal-text" },
               { id: "env", label: "Environment", icon: "bi-laptop" },
+              { id: "roles", label: "Roles & Groups", icon: "bi-shield-lock" },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -323,6 +326,16 @@ export default function SettingsPage() {
                       )}
                     </tbody>
                   </table>
+                </div>
+              </div>
+            )}
+
+            {/* Roles & Groups Tab */}
+            {activeTab === "roles" && (
+              <div className="space-y-8">
+                <RolePermissionMatrix />
+                <div className="border-t border-slate-200 pt-6">
+                  <GroupManagement />
                 </div>
               </div>
             )}

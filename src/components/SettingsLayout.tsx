@@ -9,6 +9,7 @@ const settingsTabs = [
   { id: "auth", label: "Authentication", icon: "bi-shield-lock" },
   { id: "logs", label: "Activity Logs", icon: "bi-journal-text" },
   { id: "env", label: "Environment", icon: "bi-laptop" },
+  { id: "roles", label: "Roles & Groups", icon: "bi-shield-lock" },
 ];
 
 interface SettingsLayoutProps {
