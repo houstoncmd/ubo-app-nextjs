@@ -50,7 +50,7 @@ export default function SearchPage() {
     setStatusIdx(0);
 
     try {
-      const response = await apiFetch<SearchResult>("/api/search", {
+      const response = await apiFetch<SearchResult>("/api/ubo/search", {
         method: "POST",
         body: JSON.stringify({
           registration_id: registrationId,
