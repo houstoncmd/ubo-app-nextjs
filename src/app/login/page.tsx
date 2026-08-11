@@ -25,23 +25,33 @@ export default function LoginPage() {
     }
 
     try {
+      const formData = new URLSearchParams();
+      formData.append("employee_id", submitId);
+      formData.append("password", password);
+
       const response = await fetch("/api/auth/login", {
         method: "POST",
         credentials: "include",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: JSON.stringify({
-          employee_id: submitId,
-          password: password,
-        }),
+        body: formData.toString(),
       });
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        throw new Error(
-          data.detail || data.error || `Login failed (${response.status})`
-        );
+        let errorMsg = `Login failed (${response.status})`;
+        if (data.detail) {
+          if (Array.isArray(data.detail)) {
+            // FastAPI validation error format: [{msg: "..."}, ...]
+            errorMsg = data.detail.map((d: any) => d.msg || d).join(", ");
+          } else if (typeof data.detail === "string") {
+            errorMsg = data.detail;
+          }
+        } else if (data.error) {
+          errorMsg = data.error;
+        }
+        throw new Error(errorMsg);
       }
 
       // Login successful - the session_id cookie has been set by the backend
